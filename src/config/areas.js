@@ -15,132 +15,115 @@ function esUrgencia(texto) {
 const AREAS = {
 
   consultas: {
-    id: "consultas", nombre: "Consultas y Agenda", emoji: "📅",
-    descripcion: "Agendar cita, primera vez, seguimientos",
+    id: "consultas", nombre: "Agendar una cita", emoji: "",
+    descripcion: "Primera vez, seguimiento o revisión",
     whatsapp: process.env.WA_NUM_CONSULTAS || "5213361110001",
     agente: "Recepción COE",
-    imagen: "https://i.ibb.co/KjVnWpgQ/consultas.jpg",
+    imagen: process.env.IMG_CONSULTAS || "https://i.ibb.co/KjVnWpgQ/consultas.jpg",
     flujoEspecial: "intake_cita",
   },
 
   cirugia: {
-    id: "cirugia", nombre: "Cirugía", emoji: "🔬",
-    descripcion: "Catarata · Retina · Refractiva",
+    id: "cirugia", nombre: "Cirugía", emoji: "",
+    descripcion: "Catarata, retina y corrección de visión",
     whatsapp: process.env.WA_NUM_CIRUGIA || "5213361110002",
-    agente: "Asesor de Cirugía",
-    imagen: "https://i.ibb.co/1fDhpR81/cirugia.jpg",
+    agente: "Área de Cirugía",
+    imagen: process.env.IMG_CIRUGIA || "https://i.ibb.co/1fDhpR81/cirugia.jpg",
     faqs: [
-      { id:"cir_1", pregunta:"Quiero programar mi cirugía",   flujoEspecial:"intake_cirugia" },
-      { id:"cir_2", pregunta:"¿Cuánto dura la cirugía?",      respuesta:"Depende del tipo de procedimiento. Puede durar desde *15 minutos* hasta aproximadamente *2 horas*.\n\nPor ejemplo, una cirugía de catarata o LASIK suele ser rápida, mientras que procedimientos de retina o cirugías complejas pueden tomar más tiempo.\n\nTu cirujano te indicará el tiempo estimado según tu caso." },
-      { id:"cir_3", pregunta:"¿Duele la cirugía?",            respuesta:"Habitualmente la anestesia hace muy buen trabajo y el procedimiento se realiza sin dolor.\n\nAdemás, siempre contamos con medidas específicas para *evitar o minimizar el dolor en el postquirúrgico*, tanto con medicación como con indicaciones de cuidado en casa.\n\nLa comodidad del paciente es nuestra prioridad." },
-      { id:"cir_4", pregunta:"¿Qué graduaciones se corrigen?", respuesta:"Con la cirugía refractiva podemos corregir:\n\n👁 *Miopía* — dificultad para ver de lejos\n👁 *Hipermetropía* — dificultad para ver de cerca\n👁 *Astigmatismo* — visión distorsionada\n👁 *Vista cansada (presbicia)* — dificultad para enfocar de cerca\n\nLa candidatura se determina con el estudio preoperatorio." },
-      { id:"cir_5", pregunta:"¿Cuánto cuesta la cirugía?",    respuesta:"El costo está en función de la *cirugía a la cual seamos candidatos* y a la *complejidad de la misma*.\n\nCada caso es diferente, por lo que la cotización es personalizada tras la valoración.\n\n¿Te gustaría agendar una cita de valoración?", botonCita: true },
-      { id:"cir_6", pregunta:"Tengo dudas sobre mi cirugía",  respuesta:"Es completamente normal tener dudas antes de una cirugía. Te recomendamos *agendar una cita con el especialista* y acudir con tus dudas apuntadas para aprovechar al máximo la consulta.\n\nNinguna pregunta es pequeña — estamos aquí para que te vayas tranquilo/a y con toda la información clara. 🏥" },
+      { id:"cir_1", pregunta:"Programar mi cirugía", flujoEspecial:"intake_cirugia" },
+      { id:"cir_2", pregunta:"Duración de la cirugía",
+        respuesta:"El tiempo depende del tipo de operación.\n\nUna cirugía de catarata o corrección de visión dura entre 15 y 30 minutos.\n\nOtros procedimientos pueden tomar hasta 2 horas.\n\nSu médico le indicará el tiempo exacto según su caso." },
+      { id:"cir_3", pregunta:"Si duele la cirugía",
+        respuesta:"No. Se aplica anestesia para que no sienta dolor durante la operación.\n\nDespués de la cirugía le daremos medicamentos para estar cómodo en casa.\n\nSu bienestar es lo más importante para nosotros." },
+      { id:"cir_4", pregunta:"Graduaciones que se corrigen",
+        respuesta:"Con cirugía podemos corregir:\n\n- Miopía: dificultad para ver lejos\n- Hipermetropía: dificultad para ver cerca\n- Astigmatismo: visión borrosa\n- Vista cansada: dificultad para leer\n\nPrimero hacemos un estudio para saber si usted es candidato." },
+      { id:"cir_5", pregunta:"Costo de la cirugía",
+        respuesta:"El costo depende del tipo de cirugía y de su caso particular.\n\nCada paciente es diferente, por eso damos un presupuesto personalizado después de la valoración.\n\n¿Le gustaría agendar una cita de valoración?", botonCita: true },
+      { id:"cir_6", pregunta:"Tengo dudas sobre mi operación",
+        respuesta:"Es normal tener preguntas antes de una cirugía.\n\nLe recomendamos agendar una consulta y llevar sus dudas escritas para aprovechar bien la cita.\n\nEstamos aquí para explicarle todo con calma." },
     ],
   },
 
   optica: {
-    id: "optica", nombre: "Óptica y Lentes", emoji: "👓",
-    descripcion: "Lentes graduados, armazones, contacto",
+    id: "optica", nombre: "Lentes y Optica", emoji: "",
+    descripcion: "Lentes graduados, armazones y lentes de contacto",
     whatsapp: process.env.WA_NUM_OPTICA || "5213361110003",
-    agente: "Óptica COE",
-    imagen: "https://i.ibb.co/Lzj1gqnN/optica.jpg",
+    agente: "Optica COE",
+    imagen: process.env.IMG_OPTICA || "https://i.ibb.co/Lzj1gqnN/optica.jpg",
     faqs: [
-      { id:"o1", pregunta:"Quiero agendar examen de la vista", flujoEspecial:"intake_cita_optica" },
-      { id:"o2", pregunta:"¿Cuánto tardan los lentes?",        respuesta:"Los lentes pueden estar listos en un rango de *3 a 15 días* dependiendo del tipo de lente:\n\n• Monofocales sencillos: 3-5 días\n• Progresivos o con tratamientos especiales: hasta 15 días\n\nTe avisamos en cuanto estén listos." },
-      { id:"o3", pregunta:"¿Tienen lentes de contacto?",       respuesta:"Sí, contamos con lentes de contacto de muchos tipos:\n\n• Desechables diarios y mensuales\n• Blandos esféricos y tóricos (astigmatismo)\n• Multifocales (presbicia)\n• Lentes especiales para queratocono y ojo seco\n\nPregunta a nuestro asesor sobre el más adecuado para ti." },
-      { id:"o4", pregunta:"¿Tienen garantía los lentes?",      respuesta:"Sí, contamos con garantía tanto en *adaptación* como en *defectos de fabricación*.\n\nLos detalles dependen del tipo de lente y armazón. Pregunta a nuestro asesor de óptica para conocer los términos específicos de tu compra." },
+      { id:"o1", pregunta:"Examen de la vista", flujoEspecial:"intake_cita" },
+      { id:"o2", pregunta:"Tiempo para entregar lentes",
+        respuesta:"Depende del tipo de lente:\n\n- Lentes sencillos: 3 a 5 días\n- Lentes especiales o progresivos: hasta 15 días\n\nLe avisamos cuando estén listos." },
+      { id:"o3", pregunta:"Lentes de contacto",
+        respuesta:"Sí tenemos lentes de contacto de varios tipos:\n\n- Desechables de uso diario\n- De uso mensual\n- Para astigmatismo\n- Para ver de cerca y lejos\n\nNuestro optometrista le ayuda a elegir el más adecuado." },
+      { id:"o4", pregunta:"Garantia de los lentes",
+        respuesta:"Sí, todos nuestros lentes tienen garantía por defectos de fabricación y por adaptación.\n\nPregúntenos los detalles al momento de su compra." },
     ],
   },
 
   farmacia: {
-    id: "farmacia", nombre: "Farmacia", emoji: "💊",
-    descripcion: "Medicamentos oftalmológicos, gotas, recetas",
+    id: "farmacia", nombre: "Farmacia", emoji: "",
+    descripcion: "Medicamentos, gotas y recetas",
     whatsapp: process.env.WA_NUM_FARMACIA || "5213361110004",
     agente: "Farmacia COE",
-    imagen: "https://i.ibb.co/rRzD3MQs/farmacia.jpg",
+    imagen: process.env.IMG_FARMACIA || "https://i.ibb.co/rRzD3MQs/farmacia.jpg",
     faqs: [
-      { id:"f1", pregunta:"¿Tienen mi medicamento?",    respuesta:"Contamos con inventario especializado en oftalmología: antibióticos, antiinflamatorios, lubricantes, antialérgicos, hipotensores oculares y midriáticos.\n\nPara confirmar disponibilidad de un medicamento específico, nuestro farmacéutico te puede ayudar." },
-      { id:"f2", pregunta:"¿Necesito receta?",          respuesta:"📋 *Requieren receta:* antibióticos, esteroides, hipotensores, midriáticos.\n✅ *Sin receta:* lubricantes oculares, vitaminas, solución salina.\n\nSi tu receta es del COE, está en nuestro sistema y podemos surtirla directamente." },
-      { id:"f3", pregunta:"¿Tienen gotas lubricantes?", respuesta:"Sí, contamos con varias presentaciones:\n\n• *Monodosis sin conservadores* — uso frecuente o ojo seco severo\n• *Multidosis* — uso moderado\n• *Geles* — mayor tiempo de contacto\n• *Ungüentos nocturnos* — ojo seco nocturno\n\nTe recomendamos el más adecuado según tu diagnóstico." },
-      { id:"f4", pregunta:"¿Surten recetas externas?",  respuesta:"Sí, surtimos recetas de cualquier médico. Si no tenemos el medicamento, orientamos sobre alternativas equivalentes o hacemos pedido especial." },
-      { id:"f5", pregunta:"¿Cuál es el horario?",       respuesta:"Lunes a Sábado 9:00am – 6:00pm dentro del COE.\n\nDomingos cerrado. En urgencias, preséntate directamente a la clínica." },
+      { id:"f1", pregunta:"Si tienen mi medicamento",
+        respuesta:"Contamos con medicamentos especializados para los ojos: antibióticos, antiinflamatorios, gotas lubricantes y más.\n\nPara saber si tenemos su medicamento específico, nuestro farmacéutico le puede ayudar." },
+      { id:"f2", pregunta:"Si necesito receta",
+        respuesta:"Algunos medicamentos requieren receta médica:\n\n- Con receta: antibióticos, esteroides, gotas para presión\n- Sin receta: lubricantes, vitaminas, solución salina\n\nSi su receta es del COE ya está en nuestro sistema." },
+      { id:"f3", pregunta:"Gotas para ojos secos",
+        respuesta:"Sí, tenemos varias opciones:\n\n- Monodosis sin conservadores\n- Frascos para uso frecuente\n- Geles de mayor duración\n- Ungüentos para usar de noche\n\nLe recomendamos la más adecuada según su diagnóstico." },
+      { id:"f4", pregunta:"Recetas de otro médico",
+        respuesta:"Sí surtimos recetas de cualquier médico.\n\nSi no tenemos el medicamento, le orientamos sobre alternativas o hacemos un pedido especial." },
+      { id:"f5", pregunta:"Horario de farmacia",
+        respuesta:"Lunes a Sábado de 9:00 a 18:00 horas.\n\nDomingos cerrado.\n\nEn caso de urgencia, puede presentarse directamente a la clínica." },
     ],
   },
 
   caja: {
-    id: "caja", nombre: "Caja y Pagos", emoji: "💳",
-    descripcion: "Pagos, facturas, seguros médicos",
+    id: "caja", nombre: "Pagos y Facturas", emoji: "",
+    descripcion: "Formas de pago, seguros y facturación",
     whatsapp: process.env.WA_NUM_CAJA || "5213361110005",
     agente: "Caja COE",
-    imagen: "https://i.ibb.co/KjVnWpgQ/consultas.jpg",
+    imagen: process.env.IMG_CONSULTAS || "https://i.ibb.co/KjVnWpgQ/consultas.jpg",
     faqs: [
-      { id:"c1", pregunta:"¿Qué formas de pago aceptan?", respuesta:"💵 Efectivo\n💳 Débito/Crédito (Visa, Mastercard, American Express)\n🏦 Transferencia bancaria\n🏥 Seguro médico de gastos mayores" },
-      { id:"c2", pregunta:"¿Aceptan mi seguro médico?",   respuesta:"Trabajamos con las principales aseguradoras de gastos médicos mayores. Para confirmar cobertura necesitamos el nombre de la aseguradora y número de póliza. Verificamos directamente con ellos." },
-      { id:"c3", pregunta:"¿Cómo solicito mi factura?",   respuesta:"En caja el mismo día, o por WhatsApp dentro de los *30 días naturales* del servicio.\n\nNecesitamos RFC, razón social y correo electrónico. La enviamos en PDF.\n\n⚠️ Después de 30 días no es posible facturar por disposición fiscal." },
-      { id:"c4", pregunta:"¿Aceptan seguros privados?",   respuesta:"Sí, gastos médicos mayores. Algunos requieren carta de autorización previa. Nuestro equipo de caja te orienta en todo el proceso de autorización." },
+      { id:"c1", pregunta:"Formas de pago",
+        respuesta:"Aceptamos:\n\n- Efectivo\n- Tarjeta de débito o crédito\n- Transferencia bancaria\n- Seguro de gastos médicos mayores" },
+      { id:"c2", pregunta:"Si aceptan mi seguro",
+        respuesta:"Trabajamos con las principales aseguradoras de gastos médicos mayores.\n\nPara confirmar, necesitamos el nombre de su aseguradora y número de póliza." },
+      { id:"c3", pregunta:"Como pedir mi factura",
+        respuesta:"Puede solicitarla en caja el mismo día o por WhatsApp dentro de los 30 días después del servicio.\n\nNecesitamos su RFC, razón social y correo electrónico.\n\nDespués de 30 días ya no es posible facturar." },
+      { id:"c4", pregunta:"Pagos con seguro privado",
+        respuesta:"Sí aceptamos seguros de gastos médicos mayores.\n\nAlgunos requieren autorización previa. Nuestro equipo de caja le orienta en todo el proceso." },
     ],
   },
 
   quejas: {
-    id: "quejas", nombre: "Quejas y Sugerencias", emoji: "📝",
-    descripcion: "Comparte tu experiencia, sugerencias o inconformidades",
+    id: "quejas", nombre: "Quejas y Sugerencias", emoji: "",
+    descripcion: "Comparta su experiencia o inconformidad",
     whatsapp: process.env.WA_NUM_ADMIN || process.env.WA_ALERT_NUMBER || "5213361110006",
-    agente: "Administración COE",
-    imagen: "https://i.ibb.co/Zz6LSv0f/bienvenida.jpg",
+    agente: "Administracion COE",
+    imagen: process.env.IMG_BIENVENIDA || "https://i.ibb.co/Zz6LSv0f/bienvenida.jpg",
     flujoEspecial: "intake_queja",
   },
 };
 
 const SERVICIOS = {
-  cirugia_refractiva: { nombre:"Cirugía Refractiva", emoji:"✨", descripcion:"LASIK, TransPRK Zero Touch, ICL. Corrección de miopía, hipermetropía, astigmatismo y vista cansada." },
-  cataratas:          { nombre:"Cirugía de Cataratas", emoji:"🔵", descripcion:"Facoemulsificación con microincisión. LIO monofocales, EDOF y multifocales premium." },
-  retina:             { nombre:"Retina y Vítreo", emoji:"🔴", descripcion:"Retinopatía diabética, DMRE, desprendimiento de retina. Inyecciones intravítreas y vitrectomía." },
-  glaucoma:           { nombre:"Glaucoma", emoji:"🟢", descripcion:"Diagnóstico con OCT y campimetría. Tratamiento médico, láser (SLT) y quirúrgico." },
-  cornea:             { nombre:"Córnea y Superficie", emoji:"🟡", descripcion:"Queratocono (crosslinking), pterigión, ojo seco, úlceras, trasplante corneal." },
-  oculoplastica:      { nombre:"Oculoplástica", emoji:"🟣", descripcion:"Blefaroplastia, ptosis palpebral, ectropión/entropión, obstrucción lagrimal." },
-  optometria:         { nombre:"Optometría", emoji:"👁", descripcion:"Examen de refracción, adaptación de lentes de contacto, terapia visual." },
-  contactologia:      { nombre:"Contactología", emoji:"🔵", descripcion:"Lentes blandos, tóricos, multifocales, rígidos y esclerales." },
+  cirugia_refractiva: { nombre:"Cirugia Refractiva", emoji:"", descripcion:"LASIK, TransPRK y lente ICL. Correccion de miopia, hipermetropia, astigmatismo y vista cansada." },
+  cataratas:          { nombre:"Cirugia de Cataratas", emoji:"", descripcion:"Operacion con microincision. Lentes intraoculares monofocales y premium de ultima generacion." },
+  retina:             { nombre:"Retina y Vitreo", emoji:"", descripcion:"Retinopatia diabetica, degeneracion macular, desprendimiento de retina. Inyecciones y vitrectomia." },
+  glaucoma:           { nombre:"Glaucoma", emoji:"", descripcion:"Diagnostico con OCT y campo visual. Tratamiento con gotas, laser y cirugia." },
+  cornea:             { nombre:"Cornea y Superficie Ocular", emoji:"", descripcion:"Queratocono, pterigion, ojo seco, ulceras y trasplante corneal." },
+  oculoplastica:      { nombre:"Parpados y Via Lagrimal", emoji:"", descripcion:"Cirugia de parpados caidos, exceso de piel, obstruccion lagrimal." },
+  optometria:         { nombre:"Optometria", emoji:"", descripcion:"Examen de la vista, adaptacion de lentes de contacto y terapia visual." },
+  laboratorio_optico: { nombre:"Laboratorio Optico", emoji:"", descripcion:"Fabricacion propia de lentes. Monofocales, progresivos y con tratamientos especiales." },
+  estudios:           { nombre:"Estudios Diagnosticos", emoji:"", descripcion:"OCT, topografia corneal, campo visual, biometria optica y biomecánica corneal." },
 };
 
 const BIENVENIDA_TEXTO =
-  "👁️ *Bienvenido al COE*\n\n" +
-  "Has llegado al lugar indicado para el cuidado de tus ojos.\n\n" +
-  "Cuéntanos, ¿en qué podemos ayudarte hoy? Selecciona el área que necesitas 👇";
+  "Bienvenido al Centro Ocular Especializado.\n\n" +
+  "Estamos para ayudarle con el cuidado de sus ojos.\n\n" +
+  "Seleccione la opcion que necesita:";
 
 module.exports = { AREAS, SERVICIOS, BIENVENIDA_TEXTO, esUrgencia, NUM_URGENCIAS };
-
-// ── Nuevos servicios adicionales ──────────────────────────────────────────
-const SERVICIOS_EXTRA = {
-  laboratorio_optico: {
-    nombre: "Laboratorio Óptico",
-    emoji: "🔧",
-    descripcion:
-      "Laboratorio propio dentro del COE para fabricación de lentes oftálmicos.\n\n" +
-      "🔹 Lentes monofocales, bifocales y progresivos\n" +
-      "🔹 Tratamientos: antirreflejante, fotocromático, polarizado, filtro de luz azul\n" +
-      "🔹 Lentes de alta graduación y diseños especiales\n" +
-      "🔹 Tiempos de entrega: 3 a 15 días según el tipo de lente\n\n" +
-      "Tener laboratorio propio nos permite mayor control de calidad y tiempos más rápidos que las ópticas convencionales.",
-  },
-  estudios_especialidad: {
-    nombre: "Estudios de Especialidad",
-    emoji: "🖥️",
-    descripcion:
-      "Estudios diagnósticos avanzados para evaluación oftalmológica completa:\n\n" +
-      "👁 *OCT (Tomografía de Coherencia Óptica)* — imagen de alta resolución de retina, nervio óptico y mácula.\n" +
-      "👁 *Topografía Corneal* — mapa de la superficie de la córnea. Indispensable para candidatura a cirugía refractiva y diagnóstico de queratocono.\n" +
-      "👁 *Campo Visual (Campimetría)* — evaluación del campo visual periférico. Fundamental en glaucoma y neuroftalmología.\n" +
-      "👁 *Biometría Óptica* — medición precisa del ojo para selección del lente intraocular en cirugía de cataratas.\n" +
-      "👁 *Biomecánica Corneal (Corvis ST)* — resistencia y elasticidad corneal para candidatura a LASIK/TransPRK.",
-  },
-};
-
-// Agregar a SERVICIOS existente
-Object.assign(module.exports.SERVICIOS || {}, SERVICIOS_EXTRA);
-// Re-exportar con los extras incluidos
-const SERVICIOS_COMPLETOS = {
-  ...module.exports.SERVICIOS,
-  ...SERVICIOS_EXTRA,
-};
-module.exports.SERVICIOS = SERVICIOS_COMPLETOS;
