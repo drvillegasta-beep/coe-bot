@@ -1,0 +1,17 @@
+{
+  "name": "coe-bot",
+  "version": "6.0.0",
+  "description": "Bot de WhatsApp para Centro Ocular Especializado",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
