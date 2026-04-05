@@ -46,11 +46,22 @@ async function markRead(msgId) {
   } catch (_) {}
 }
 
+// Números de alerta — soporta múltiples separados por coma
+// Ej: WA_ALERT_NUMBER=524432068104,526643036225
+function getAlertNumbers() {
+  const raw = process.env.WA_ALERT_NUMBER || "";
+  return raw.split(",").map(n => n.trim()).filter(Boolean);
+}
+
 async function markAsUnread(phone) {
-  await sendMsg(process.env.WA_ALERT_NUMBER || phone, {
+  const alertNums = getAlertNumbers();
+  const msg = {
     type: "text",
-    text: { body: `⚠️ *COE — Atención* Paciente +${phone} lleva más de 5 min sin respuesta. Por favor retomen la conversación. 🙏` },
-  });
+    text: { body: `⚠️ *COE — Atención*\n\nPaciente +${phone} lleva más de 5 min sin respuesta.\n\nPor favor retomen la conversación. 🙏` },
+  };
+  for (const num of alertNums) {
+    await sendMsg(num, msg);
+  }
 }
 
 async function notifyArea(areaId, patientNum, msg) {
@@ -60,8 +71,15 @@ async function notifyArea(areaId, patientNum, msg) {
 
 async function notifyUrgencia(patientNum, mensaje) {
   const n = buildUrgenciaNotification(patientNum, mensaje);
+  // Notificar al número general Y a los números de alerta
   await sendMsg(NUM_URGENCIAS, { type: "text", text: { body: n.message } });
-  console.log(`🚨 Urgencia notificada al número general: ${patientNum}`);
+  const alertNums = getAlertNumbers();
+  for (const num of alertNums) {
+    if (num !== NUM_URGENCIAS) {
+      await sendMsg(num, { type: "text", text: { body: n.message } });
+    }
+  }
+  console.log(`🚨 Urgencia notificada: ${patientNum}`);
 }
 
 // ── Intake de cita paso a paso ────────────────────────────────────────────
