@@ -19,7 +19,7 @@ const AREAS = {
     descripcion: "Agendar cita, primera vez, seguimientos",
     whatsapp: process.env.WA_NUM_CONSULTAS || "5213361110001",
     agente: "Recepción COE",
-    imagen: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80",
+    imagen: "https://i.ibb.co/KjVnWpgQ/consultas.jpg",
     flujoEspecial: "intake_cita",
   },
 
@@ -28,7 +28,7 @@ const AREAS = {
     descripcion: "Catarata · Retina · Refractiva",
     whatsapp: process.env.WA_NUM_CIRUGIA || "5213361110002",
     agente: "Asesor de Cirugía",
-    imagen: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=800&q=80",
+    imagen: "https://i.ibb.co/1fDhpR81/cirugia.jpg",
     faqs: [
       { id:"cir_1", pregunta:"Quiero programar mi cirugía",   flujoEspecial:"intake_cirugia" },
       { id:"cir_2", pregunta:"¿Cuánto dura la cirugía?",      respuesta:"Depende del tipo de procedimiento. Puede durar desde *15 minutos* hasta aproximadamente *2 horas*.\n\nPor ejemplo, una cirugía de catarata o LASIK suele ser rápida, mientras que procedimientos de retina o cirugías complejas pueden tomar más tiempo.\n\nTu cirujano te indicará el tiempo estimado según tu caso." },
@@ -44,7 +44,7 @@ const AREAS = {
     descripcion: "Lentes graduados, armazones, contacto",
     whatsapp: process.env.WA_NUM_OPTICA || "5213361110003",
     agente: "Óptica COE",
-    imagen: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=800&q=80",
+    imagen: "https://i.ibb.co/Lzj1gqnN/optica.jpg",
     faqs: [
       { id:"o1", pregunta:"Quiero agendar examen de la vista", flujoEspecial:"intake_cita_optica" },
       { id:"o2", pregunta:"¿Cuánto tardan los lentes?",        respuesta:"Los lentes pueden estar listos en un rango de *3 a 15 días* dependiendo del tipo de lente:\n\n• Monofocales sencillos: 3-5 días\n• Progresivos o con tratamientos especiales: hasta 15 días\n\nTe avisamos en cuanto estén listos." },
@@ -58,7 +58,7 @@ const AREAS = {
     descripcion: "Medicamentos oftalmológicos, gotas, recetas",
     whatsapp: process.env.WA_NUM_FARMACIA || "5213361110004",
     agente: "Farmacia COE",
-    imagen: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&q=80",
+    imagen: "https://i.ibb.co/rRzD3MQs/farmacia.jpg",
     faqs: [
       { id:"f1", pregunta:"¿Tienen mi medicamento?",    respuesta:"Contamos con inventario especializado en oftalmología: antibióticos, antiinflamatorios, lubricantes, antialérgicos, hipotensores oculares y midriáticos.\n\nPara confirmar disponibilidad de un medicamento específico, nuestro farmacéutico te puede ayudar." },
       { id:"f2", pregunta:"¿Necesito receta?",          respuesta:"📋 *Requieren receta:* antibióticos, esteroides, hipotensores, midriáticos.\n✅ *Sin receta:* lubricantes oculares, vitaminas, solución salina.\n\nSi tu receta es del COE, está en nuestro sistema y podemos surtirla directamente." },
@@ -73,7 +73,7 @@ const AREAS = {
     descripcion: "Pagos, facturas, seguros médicos",
     whatsapp: process.env.WA_NUM_CAJA || "5213361110005",
     agente: "Caja COE",
-    imagen: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
+    imagen: "https://i.ibb.co/KjVnWpgQ/consultas.jpg",
     faqs: [
       { id:"c1", pregunta:"¿Qué formas de pago aceptan?", respuesta:"💵 Efectivo\n💳 Débito/Crédito (Visa, Mastercard, American Express)\n🏦 Transferencia bancaria\n🏥 Seguro médico de gastos mayores" },
       { id:"c2", pregunta:"¿Aceptan mi seguro médico?",   respuesta:"Trabajamos con las principales aseguradoras de gastos médicos mayores. Para confirmar cobertura necesitamos el nombre de la aseguradora y número de póliza. Verificamos directamente con ellos." },
@@ -87,7 +87,7 @@ const AREAS = {
     descripcion: "Comparte tu experiencia, sugerencias o inconformidades",
     whatsapp: process.env.WA_NUM_ADMIN || process.env.WA_ALERT_NUMBER || "5213361110006",
     agente: "Administración COE",
-    imagen: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
+    imagen: "https://i.ibb.co/Zz6LSv0f/bienvenida.jpg",
     flujoEspecial: "intake_queja",
   },
 };
