@@ -102,6 +102,76 @@ app.post("/alerta-caja", async (req, res) => {
   res.json({ ok: resultados.some(r => r.ok), resultados });
 });
 
+// ── Lectura de comprobantes de caja con IA (la pide Supabase) ─────────────
+// POST /leer-comprobante   encabezado x-coe-key = CAJA_KEY
+// cuerpo: { tipo: "eoptics"|"depositador"|"voucher"|"transferencia", url }
+const INSTRUCCIONES_LECTURA = {
+  eoptics: `Es el "Resumen del corte" de caja del sistema eOptics de una clínica en México.
+Busca la sección "Totales X Tipo de Pago" (o similar) y extrae el total de cada forma de pago.
+- efectivo: total en efectivo.
+- tarjeta: suma de tarjeta de débito y crédito (0 si no aparece).
+- transferencia: suma de transferencias, interbancarias o SPEI (0 si no aparece).
+No uses "Efectivo Ventas" ni los datos del reciclador (Efe Ini/Fin Reciclador o Cassette).
+Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","efectivo":0,"tarjeta":0,"transferencia":0}`,
+  depositador: `Es el ticket de un depositador o reciclador de efectivo.
+Extrae el monto total depositado en esta operación.
+Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","hora":"HH:MM o null","total":0}`,
+  voucher: `Es el voucher de cierre de lote de una terminal bancaria.
+Extrae el total de ventas del lote (si hay devoluciones o cancelaciones, el total neto).
+Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","total":0}`,
+  transferencia: `Es el comprobante o captura de una transferencia bancaria recibida.
+Extrae el monto de la transferencia.
+Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","referencia":"texto o null","monto":0}`,
+};
+
+app.post("/leer-comprobante", async (req, res) => {
+  const axios = require("axios");
+  if (!process.env.CAJA_KEY || req.get("x-coe-key") !== process.env.CAJA_KEY) {
+    return res.status(401).json({ ok: false, error: "No autorizado" });
+  }
+  const { tipo, url } = req.body || {};
+  const instr = INSTRUCCIONES_LECTURA[tipo];
+  if (!instr || !url) return res.status(400).json({ ok: false, error: "Faltan tipo o url" });
+
+  try {
+    const archivo = await axios.get(url, { responseType: "arraybuffer", timeout: 20000, maxContentLength: 15e6 });
+    const mime = String(archivo.headers["content-type"] || "").split(";")[0];
+    const datos = Buffer.from(archivo.data).toString("base64");
+    const bloque = mime === "application/pdf"
+      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: datos } }
+      : { type: "image", source: { type: "base64",
+          media_type: ["image/png", "image/webp", "image/gif"].includes(mime) ? mime : "image/jpeg", data: datos } };
+
+    const pedir = (modelo) => axios.post("https://api.anthropic.com/v1/messages", {
+      model: modelo, max_tokens: 400,
+      system: "Lees comprobantes de caja. Responde SOLO con un objeto JSON válido, sin texto adicional ni comillas de código. " +
+              "Los montos son números sin signo de pesos ni comas. Si la imagen no se puede leer con seguridad, " +
+              'responde {"legible":false,"motivo":"explicación corta en español"}.',
+      messages: [{ role: "user", content: [bloque, { type: "text", text: instr }] }],
+    }, { headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01",
+                    "content-type": "application/json" }, timeout: 45000 });
+
+    let r;
+    try { r = await pedir(process.env.CAJA_MODELO || "claude-sonnet-5"); }
+    catch (e) {
+      if (e.response?.status === 404 || e.response?.data?.error?.type === "not_found_error") r = await pedir("claude-sonnet-4-20250514");
+      else throw e;
+    }
+    const texto = (r.data.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim()
+                   .replace(/^```(json)?/i, "").replace(/```$/, "").trim();
+    const lectura = JSON.parse(texto);
+    for (const k of ["efectivo", "tarjeta", "transferencia", "total", "monto"]) {
+      if (k in lectura) lectura[k] = Math.round(Number(String(lectura[k]).replace(/[^0-9.\-]/g, "")) * 100) / 100 || 0;
+    }
+    console.log(`🧾 Lectura ${tipo}:`, JSON.stringify(lectura));
+    res.json({ ok: lectura.legible !== false, lectura, error: lectura.legible === false ? (lectura.motivo || "No se pudo leer") : undefined });
+  } catch (err) {
+    const detalle = err.response?.data?.error?.message || err.message;
+    console.error("❌ Lectura de comprobante:", detalle);
+    res.json({ ok: false, error: "No se pudo leer el comprobante: " + detalle });
+  }
+});
+
 // ─────────────────────────────────────────────
 // HEALTH CHECK
 // ─────────────────────────────────────────────
