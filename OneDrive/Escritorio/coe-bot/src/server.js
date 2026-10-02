@@ -106,6 +106,26 @@ app.post("/alerta-caja", async (req, res) => {
 // POST /leer-comprobante   encabezado x-coe-key = CAJA_KEY
 // cuerpo: { tipo: "eoptics"|"depositador"|"voucher"|"transferencia", url }
 const INSTRUCCIONES_LECTURA = {
+  auto: `Identifica qué documento de caja es y extrae sus datos. Es de una clínica en México.
+Tipos posibles:
+- "eoptics": "Resumen del corte" del sistema eOptics. Tiene "Totales X Tipo de Pago" y lista de ventas o pacientes.
+  Extrae efectivo, tarjeta (débito + crédito) y transferencia de los totales por tipo de pago.
+  No uses "Efectivo Ventas" ni los datos del reciclador (Efe Ini/Fin Reciclador o Cassette).
+- "depositador": ticket de UN depósito hecho en la máquina depositadora o recicladora de efectivo. Extrae el monto depositado y la hora.
+- "corte_dia": corte, cierre o resumen FINAL DEL DÍA de la máquina depositadora, que suma varios depósitos. Extrae el total depositado del día.
+- "voucher": cierre de lote de una terminal bancaria. Extrae el total neto del lote y el número de lote.
+- "transferencia": comprobante o captura de una transferencia bancaria o SPEI recibida. Extrae monto y referencia o clave de rastreo.
+- "otro": cualquier otra cosa.
+Responde según el tipo, por ejemplo:
+{"tipo":"eoptics","legible":true,"fecha":"YYYY-MM-DD","efectivo":0,"tarjeta":0,"transferencia":0}
+{"tipo":"depositador","legible":true,"fecha":"YYYY-MM-DD","hora":"HH:MM","total":0}
+{"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD","total":0}
+{"tipo":"voucher","legible":true,"fecha":"YYYY-MM-DD","lote":"texto o null","total":0}
+{"tipo":"transferencia","legible":true,"fecha":"YYYY-MM-DD","referencia":"texto o null","monto":0}
+{"tipo":"otro","legible":true}`,
+  corte_dia: `Es el corte o resumen final del día de una máquina depositadora de efectivo.
+Extrae el total depositado del día.
+Responde: {"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD o null","total":0}`,
   eoptics: `Es el "Resumen del corte" de caja del sistema eOptics de una clínica en México.
 Busca la sección "Totales X Tipo de Pago" (o similar) y extrae el total de cada forma de pago.
 - efectivo: total en efectivo.
@@ -143,7 +163,7 @@ app.post("/leer-comprobante", async (req, res) => {
           media_type: ["image/png", "image/webp", "image/gif"].includes(mime) ? mime : "image/jpeg", data: datos } };
 
     const pedir = (modelo) => axios.post("https://api.anthropic.com/v1/messages", {
-      model: modelo, max_tokens: 400,
+      model: modelo, max_tokens: 500,
       system: "Lees comprobantes de caja. Responde SOLO con un objeto JSON válido, sin texto adicional ni comillas de código. " +
               "Los montos son números sin signo de pesos ni comas. Si la imagen no se puede leer con seguridad, " +
               'responde {"legible":false,"motivo":"explicación corta en español"}.',
