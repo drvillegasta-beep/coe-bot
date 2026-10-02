@@ -111,18 +111,20 @@ Tipos posibles:
 - "eoptics": "Resumen del corte" del sistema eOptics. Tiene "Totales X Tipo de Pago" y lista de ventas o pacientes.
   Extrae efectivo, tarjeta (débito + crédito) y transferencia de los totales por tipo de pago.
   No uses "Efectivo Ventas" ni los datos del reciclador (Efe Ini/Fin Reciclador o Cassette).
-- "depositador": ticket de UN depósito hecho en la máquina depositadora o recicladora de efectivo. Extrae el monto depositado y la hora.
+- "depositador": comprobante de UN depósito de efectivo. En esta clínica suele ser un "Recibo de pago" de "CENTRO OCULAR TACAMBARO"
+  con FECHA, SUCURSAL, PEDIDO, IMPORTE, TOTAL PAGADO y "FORMA PAGO: EF" (a veces con "Total cobrado" y "Totales X Tipo de Pago" abajo),
+  o un ticket de la máquina depositadora o recicladora. Usa TOTAL PAGADO (o el monto depositado) como total y la hora de FECHA.
 - "corte_dia": corte, cierre o resumen FINAL DEL DÍA de la máquina depositadora, que suma varios depósitos. Extrae el total depositado del día.
 - "voucher": cierre de lote de una terminal bancaria. Extrae el total neto del lote y el número de lote.
 - "transferencia": comprobante o captura de una transferencia bancaria o SPEI recibida. Extrae monto y referencia o clave de rastreo.
-- "otro": cualquier otra cosa.
+- "otro": cualquier otra cosa. Si es "otro", agrega "descripcion" con lo que ves en pocas palabras.
 Responde según el tipo, por ejemplo:
 {"tipo":"eoptics","legible":true,"fecha":"YYYY-MM-DD","efectivo":0,"tarjeta":0,"transferencia":0}
 {"tipo":"depositador","legible":true,"fecha":"YYYY-MM-DD","hora":"HH:MM","total":0}
 {"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD","total":0}
 {"tipo":"voucher","legible":true,"fecha":"YYYY-MM-DD","lote":"texto o null","total":0}
 {"tipo":"transferencia","legible":true,"fecha":"YYYY-MM-DD","referencia":"texto o null","monto":0}
-{"tipo":"otro","legible":true}`,
+{"tipo":"otro","legible":true,"descripcion":"texto corto"}`,
   corte_dia: `Es el corte o resumen final del día de una máquina depositadora de efectivo.
 Extrae el total depositado del día.
 Responde: {"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD o null","total":0}`,
