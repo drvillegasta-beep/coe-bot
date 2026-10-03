@@ -194,6 +194,26 @@ app.post("/leer-comprobante", async (req, res) => {
   }
 });
 
+// ── Diagnóstico: transcribe un comprobante (solo con clave) ──────────────
+app.post("/describir-comprobante", async (req, res) => {
+  const axios = require("axios");
+  if (!process.env.CAJA_KEY || req.get("x-coe-key") !== process.env.CAJA_KEY) return res.status(401).json({ ok: false });
+  try {
+    const a = await axios.get(req.body.url, { responseType: "arraybuffer", timeout: 20000 });
+    const mime = String(a.headers["content-type"] || "").split(";")[0];
+    const datos = Buffer.from(a.data).toString("base64");
+    const bloque = mime === "application/pdf"
+      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: datos } }
+      : { type: "image", source: { type: "base64", media_type: "image/jpeg", data: datos } };
+    const r = await axios.post("https://api.anthropic.com/v1/messages", {
+      model: process.env.CAJA_MODELO || "claude-sonnet-5", max_tokens: 1500,
+      messages: [{ role: "user", content: [bloque, { type: "text", text:
+        "Transcribe los encabezados, fechas, horas y TODOS los montos de este documento, sección por sección, en texto plano. No incluyas nombres de pacientes." }] }],
+    }, { headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" }, timeout: 60000 });
+    res.json({ ok: true, paginas: mime, texto: (r.data.content || []).map(b => b.text || "").join("") });
+  } catch (e) { res.json({ ok: false, error: e.response?.data?.error?.message || e.message }); }
+});
+
 // ─────────────────────────────────────────────
 // HEALTH CHECK
 // ─────────────────────────────────────────────
