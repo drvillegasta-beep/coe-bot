@@ -108,8 +108,10 @@ app.post("/alerta-caja", async (req, res) => {
 const INSTRUCCIONES_LECTURA = {
   auto: `Identifica qué documento de caja es y extrae sus datos. Es de una clínica en México.
 Tipos posibles:
-- "eoptics": "Resumen del corte" del sistema eOptics. Tiene "Totales X Tipo de Pago" y lista de ventas o pacientes.
-  Extrae efectivo, tarjeta (débito + crédito) y transferencia de los totales por tipo de pago.
+- "eoptics": "Hoja de Corte" o "Resumen del corte" del sistema eOptics. Tiene "Corte Consecutivo", "Sucursal", "Cajero",
+  "Totales X Tipo de Pago" y lista de ventas o pacientes. Extrae efectivo, tarjeta (débito + crédito) y transferencia
+  de los totales por tipo de pago (si solo dice Total $0.00, todo es 0). Extrae también el número de "Corte Consecutivo",
+  el texto de "Sucursal", si el título dice "PARCIAL" y el rango de fecha y hora del corte.
   No uses "Efectivo Ventas" ni los datos del reciclador (Efe Ini/Fin Reciclador o Cassette).
 - "depositador": comprobante de UN depósito de efectivo. En esta clínica suele ser un "Recibo de pago" de "CENTRO OCULAR TACAMBARO"
   con FECHA, SUCURSAL, PEDIDO, IMPORTE, TOTAL PAGADO y "FORMA PAGO: EF" (a veces con "Total cobrado" y "Totales X Tipo de Pago" abajo),
@@ -119,7 +121,7 @@ Tipos posibles:
 - "transferencia": comprobante o captura de una transferencia bancaria o SPEI recibida. Extrae monto y referencia o clave de rastreo.
 - "otro": cualquier otra cosa. Si es "otro", agrega "descripcion" con lo que ves en pocas palabras.
 Responde según el tipo, por ejemplo:
-{"tipo":"eoptics","legible":true,"fecha":"YYYY-MM-DD","efectivo":0,"tarjeta":0,"transferencia":0}
+{"tipo":"eoptics","legible":true,"fecha":"YYYY-MM-DD","efectivo":0,"tarjeta":0,"transferencia":0,"consecutivo":"2753","sucursal":"texto","parcial":true,"desde":"HH:MM o null","hasta":"HH:MM o null"}
 {"tipo":"depositador","legible":true,"fecha":"YYYY-MM-DD","hora":"HH:MM","total":0}
 {"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD","total":0}
 {"tipo":"voucher","legible":true,"fecha":"YYYY-MM-DD","lote":"texto o null","total":0}
