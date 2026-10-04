@@ -72,8 +72,9 @@ app.post("/alerta-caja", async (req, res) => {
   }
   // Las plantillas de Meta no aceptan saltos de línea ni muchos espacios en las variables
   const texto = String(mensaje).replace(/[\r\n\t]+/g, " · ").replace(/ {4,}/g, "   ").slice(0, 1000);
-  const url = `https://graph.facebook.com/v19.0/${process.env.WHATSAPP_PHONE_ID}/messages`;
-  const headers = { Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`, "Content-Type": "application/json" };
+  // Número propio para avisos de caja (si no se configura, usa el del bot de pacientes)
+  const url = `https://graph.facebook.com/v19.0/${process.env.CAJA_PHONE_ID || process.env.WHATSAPP_PHONE_ID}/messages`;
+  const headers = { Authorization: `Bearer ${process.env.CAJA_WHATSAPP_TOKEN || process.env.WHATSAPP_TOKEN}`, "Content-Type": "application/json" };
   const plantilla = process.env.CAJA_TEMPLATE || "alerta_caja";
   const idioma = process.env.CAJA_TEMPLATE_LANG || "es_MX";
   const resultados = [];
