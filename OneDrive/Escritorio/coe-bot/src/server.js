@@ -88,7 +88,8 @@ app.post("/alerta-caja", async (req, res) => {
       }, { headers });
       resultados.push({ to, ok: true, via: "plantilla" });
     } catch (err) {
-      const errPlantilla = err.response?.data?.error?.message || err.message;
+      const e0 = err.response?.data?.error || {};
+      const errPlantilla = [e0.message || err.message, e0.code != null ? `código ${e0.code}` : "", e0.error_subcode ? `sub ${e0.error_subcode}` : "", e0.error_data?.details || ""].filter(Boolean).join(" · ");
       try {
         // Respaldo: texto libre (solo llega si la persona escribió al bot en las últimas 24 h)
         await axios.post(url, { messaging_product: "whatsapp", to, type: "text",
@@ -101,6 +102,32 @@ app.post("/alerta-caja", async (req, res) => {
   }
   console.log(`📣 Alerta de caja (${tipo || "sin tipo"}):`, JSON.stringify(resultados));
   res.json({ ok: resultados.some(r => r.ok), resultados });
+});
+
+// ── Diagnóstico de WhatsApp (Meta) ───────────────────────────────────────
+// GET /diagnostico-wa   encabezado x-coe-key = CAJA_KEY. No devuelve el token.
+app.get("/diagnostico-wa", async (req, res) => {
+  const axios = require("axios");
+  if (!process.env.CAJA_KEY || req.get("x-coe-key") !== process.env.CAJA_KEY) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+  const G = "https://graph.facebook.com/v19.0";
+  const probar = async (nombre, phoneId, token) => {
+    const r = { nombre, phone_id_configurado: !!phoneId, token_configurado: !!token,
+                token_largo: token ? token.length : 0, token_inicio: token ? token.slice(0, 4) : null };
+    const get = async (ruta, params) => {
+      try { return { ok: true, data: (await axios.get(G + ruta, { params: { ...params, access_token: token } })).data }; }
+      catch (e) { const x = e.response?.data?.error || {}; return { ok: false, status: e.response?.status, message: x.message || e.message, type: x.type, code: x.code, subcode: x.error_subcode, details: x.error_data?.details, user_title: x.error_user_title, user_msg: x.error_user_msg }; }
+    };
+    if (!token) return r;
+    r.me = await get("/me", { fields: "id,name" });
+    if (phoneId) r.numero = await get(`/${phoneId}`, { fields: "display_phone_number,verified_name,code_verification_status,quality_rating,status,name_status,platform_type,account_mode,messaging_limit_tier" });
+    return r;
+  };
+  const salida = [await probar("pacientes", process.env.WHATSAPP_PHONE_ID, process.env.WHATSAPP_TOKEN)];
+  if (process.env.CAJA_PHONE_ID || process.env.CAJA_WHATSAPP_TOKEN)
+    salida.push(await probar("caja", process.env.CAJA_PHONE_ID || process.env.WHATSAPP_PHONE_ID, process.env.CAJA_WHATSAPP_TOKEN || process.env.WHATSAPP_TOKEN));
+  res.json({ ok: true, salida, otras: { PHONE_NUMBER_ID_configurado: !!process.env.PHONE_NUMBER_ID, iguales: process.env.PHONE_NUMBER_ID === process.env.WHATSAPP_PHONE_ID } });
 });
 
 // ── Lectura de comprobantes de caja con IA (la pide Supabase) ─────────────
