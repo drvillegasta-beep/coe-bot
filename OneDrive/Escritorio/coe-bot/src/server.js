@@ -121,6 +121,10 @@ app.get("/diagnostico-wa", async (req, res) => {
     };
     if (!token) return r;
     r.me = await get("/me", { fields: "id,name" });
+    if (process.env.PHONE_NUMBER_ID && process.env.PHONE_NUMBER_ID !== phoneId)
+      r.numero_alterno = await get(`/${process.env.PHONE_NUMBER_ID}`, { fields: "display_phone_number,verified_name,status,platform_type,code_verification_status" });
+    r.cuentas = await get(`/${req.query.negocio || "948497490888507"}/owned_whatsapp_business_accounts`, { fields: "id,name,phone_numbers{id,display_phone_number,verified_name,status,platform_type,code_verification_status}" });
+    r.cuentas_cliente = await get(`/${req.query.negocio || "948497490888507"}/client_whatsapp_business_accounts`, { fields: "id,name,phone_numbers{id,display_phone_number,verified_name,status,platform_type}" });
     if (phoneId) r.numero = await get(`/${phoneId}`, { fields: "display_phone_number,verified_name,code_verification_status,quality_rating,status,name_status,platform_type,account_mode,messaging_limit_tier" });
     return r;
   };
