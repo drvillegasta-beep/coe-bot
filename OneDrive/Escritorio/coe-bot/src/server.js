@@ -148,7 +148,10 @@ Tipos posibles:
 - "depositador": comprobante de UN depósito de efectivo. En esta clínica suele ser un "Recibo de pago" de "CENTRO OCULAR TACAMBARO"
   con FECHA, SUCURSAL, PEDIDO, IMPORTE, TOTAL PAGADO y "FORMA PAGO: EF" (a veces con "Total cobrado" y "Totales X Tipo de Pago" abajo),
   o un ticket de la máquina depositadora o recicladora. Usa TOTAL PAGADO (o el monto depositado) como total y la hora de FECHA.
-- "corte_dia": corte, cierre o resumen FINAL DEL DÍA de la máquina depositadora, que suma varios depósitos. Extrae el total depositado del día.
+- "corte_dia": corte FINAL DEL DÍA de la máquina recicladora/depositadora. En esta clínica es un ticket "Resumen del corte del <fecha>"
+  con "Efe Ini Reciclador", "Efe Ini Cassette", "Efectivo Ventas", "Efe Fin Reciclador" y "Total", o un "Detalle del corte"
+  con "AperturaRec", la lista de ventas en efectivo, "CierreRec" y "Total ventas día". Si NO tiene "Totales X Tipo de Pago" ni
+  "Corte Consecutivo", no es eOptics: es corte_dia. Usa como total "Efectivo Ventas" (o "Total ventas día", o "Total").
 - "voucher": cierre de lote de una terminal bancaria. Extrae el total neto del lote y el número de lote.
 - "transferencia": comprobante o captura de una transferencia bancaria o SPEI recibida. Extrae monto y referencia o clave de rastreo.
 - "otro": cualquier otra cosa. Si es "otro", agrega "descripcion" con lo que ves en pocas palabras.
@@ -159,8 +162,15 @@ Responde según el tipo, por ejemplo:
 {"tipo":"voucher","legible":true,"fecha":"YYYY-MM-DD","lote":"texto o null","total":0}
 {"tipo":"transferencia","legible":true,"fecha":"YYYY-MM-DD","referencia":"texto o null","monto":0}
 {"tipo":"otro","legible":true,"descripcion":"texto corto"}`,
-  corte_dia: `Es el corte o resumen final del día de una máquina depositadora de efectivo.
-Extrae el total depositado del día.
+  corte_dia: `Es el corte final del día de la máquina recicladora/depositadora de efectivo de una clínica en México.
+Formatos habituales:
+- "Resumen del corte del <fecha>" con "Efe Ini Reciclador", "Efe Ini Cassette", "Efectivo Ventas", "Efe Fin Reciclador", "Efe Fin Cassette" y "Total".
+- "Detalle del corte" con "AperturaRec", una lista de ventas en efectivo, "CierreRec" y "Total ventas día".
+- Cualquier otro corte o cierre del día de la depositadora que sume los depósitos.
+El total es "Efectivo Ventas" (o "Total ventas día", o el "Total" del corte). NO uses "Efe Ini" ni "Efe Fin" (son saldos de la máquina).
+Si la foto trae también otras hojas (como un corte de eOptics), usa solo la del depositador.
+La fecha es la del corte ("Resumen del corte del 24 oct. 2026" → 2026-10-24).
+Si no puedes leer el total, responde {"tipo":"corte_dia","legible":false,"total":null,"descripcion":"qué ves"}.
 Responde: {"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD o null","total":0}`,
   eoptics: `Es el "Resumen del corte" de caja del sistema eOptics de una clínica en México.
 Busca la sección "Totales X Tipo de Pago" (o similar) y extrae el total de cada forma de pago.
