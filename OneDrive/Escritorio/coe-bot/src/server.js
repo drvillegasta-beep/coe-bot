@@ -153,14 +153,16 @@ Tipos posibles:
   con "AperturaRec", la lista de ventas en efectivo, "CierreRec" y "Total ventas día". Si NO tiene "Totales X Tipo de Pago" ni
   "Corte Consecutivo", no es eOptics: es corte_dia. Usa como total "Efectivo Ventas" (o "Total ventas día", o "Total").
 - "voucher": cierre de lote de una terminal bancaria. Extrae el total neto del lote y el número de lote.
-- "transferencia": comprobante o captura de una transferencia bancaria o SPEI recibida. Extrae monto y referencia o clave de rastreo.
+- "transferencia": comprobante o captura de una transferencia bancaria o SPEI recibida (también un CEP de Banxico o un pago en tienda a cuenta o tarjeta).
+  Extrae monto, fecha y hora de la operación (o del abono), la "clave de rastreo" (o folio de operación único) en "rastreo" y la
+  "referencia" numérica. Si el banco imprime el mismo número fijo en todos sus comprobantes, ese número no es la clave de rastreo.
 - "otro": cualquier otra cosa. Si es "otro", agrega "descripcion" con lo que ves en pocas palabras.
 Responde según el tipo, por ejemplo:
 {"tipo":"eoptics","legible":true,"fecha":"YYYY-MM-DD","efectivo":0,"tarjeta":0,"transferencia":0,"consecutivo":"2753","sucursal":"texto","parcial":true,"desde":"HH:MM o null","hasta":"HH:MM o null"}
 {"tipo":"depositador","legible":true,"fecha":"YYYY-MM-DD","hora":"HH:MM","total":0}
 {"tipo":"corte_dia","legible":true,"fecha":"YYYY-MM-DD","total":0}
 {"tipo":"voucher","legible":true,"fecha":"YYYY-MM-DD","lote":"texto o null","total":0}
-{"tipo":"transferencia","legible":true,"fecha":"YYYY-MM-DD","referencia":"texto o null","monto":0}
+{"tipo":"transferencia","legible":true,"fecha":"YYYY-MM-DD","hora":"HH:MM o null","rastreo":"texto o null","referencia":"texto o null","monto":0}
 {"tipo":"otro","legible":true,"descripcion":"texto corto"}`,
   corte_dia: `Es el corte final del día de la máquina recicladora/depositadora de efectivo de una clínica en México.
 Formatos habituales:
@@ -185,9 +187,10 @@ Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","hora":"HH:MM o null","tot
   voucher: `Es el voucher de cierre de lote de una terminal bancaria.
 Extrae el total de ventas del lote (si hay devoluciones o cancelaciones, el total neto).
 Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","total":0}`,
-  transferencia: `Es el comprobante o captura de una transferencia bancaria recibida.
-Extrae el monto de la transferencia.
-Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","referencia":"texto o null","monto":0}`,
+  transferencia: `Es el comprobante o captura de una transferencia bancaria recibida (SPEI, CEP de Banxico, captura de app bancaria o pago en tienda).
+Extrae el monto, la fecha y la hora de la operación (o del abono), la "clave de rastreo" o folio único de la operación en "rastreo"
+y la "referencia" numérica. Si el banco imprime el mismo número fijo en todos sus comprobantes, ese número no es la clave de rastreo.
+Responde: {"legible":true,"fecha":"YYYY-MM-DD o null","hora":"HH:MM o null","rastreo":"texto o null","referencia":"texto o null","monto":0}`,
 };
 
 app.post("/leer-comprobante", async (req, res) => {
